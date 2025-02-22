@@ -27,10 +27,6 @@ const App = () => {
 
   // Function to fetch restaurant data from Flask backend
   const fetchRestaurants = async () => {
-    if (isFetchingRef.current) return;
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-    isFetchingRef.current = true;
     try {
       const response = await fetch("http://127.0.0.1:5000/test-yelp");
       const data = await response.json();
@@ -44,7 +40,6 @@ const App = () => {
     } catch (err) {
       //setError("Could not connect to Flask server.");
     } finally {
-      isFetchingRef.current = false;
       setIsListening(false); // Reset listening state after fetch completes or is aborted
     }
   };
@@ -58,7 +53,7 @@ const App = () => {
         {isListening && <div className="wave wave3"></div>}
 
       {error && <p className="error">{error}</p>}
-      <p></p>
+      <p className="bottom-text">{isListening ? "Listening..." : "Click to Speak"}</p>
     </div>
   );
 };
