@@ -3,6 +3,7 @@ import speech_recognition as sr
 from gtts import gTTS
 import os
 import pygame
+import spacy
 
 
 # Set up OpenAI API Key

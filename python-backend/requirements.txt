@@ -5,3 +5,4 @@ gTTS
 flask
 pygame
 requests
+spacy
