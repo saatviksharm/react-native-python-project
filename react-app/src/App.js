@@ -24,7 +24,7 @@ const App = () => {
   };
 
   return (
-    <div className="App">
+    <div className="App gradient-background">
       <h1>Listening for Restaurants...</h1>
 
       <button className="mic-button" onClick={fetchRestaurants}>

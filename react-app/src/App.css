@@ -50,3 +50,38 @@
   font-size: 18px;
   margin-bottom: 5px;
 }
+.gradient-background {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(200deg, #00c6ff, #0072ff, #00ff95, #00c6ff);
+  background-size: 200% 200%;
+  animation: gradientAnimation 20s ease infinite;
+}
+
+.title {
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+}
+
+.subtitle {
+  color: white;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-top: 10px;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
