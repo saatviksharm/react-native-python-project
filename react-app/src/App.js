@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./App.css";
 
 const App = () => {
-  const [listening, setListening] = useState(true);
-  const [restaurants, setRestaurants] = useState([]);
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
 
   // Function to fetch restaurant data from Flask backend
@@ -15,25 +15,11 @@ const App = () => {
       if (data.error) {
         setError(data.error);
       } else {
-        setRestaurants(data.restaurant_names);
-        speakRestaurants(data.restaurant_names); // Speak results
+        localStorage.setItem("restaurants", JSON.stringify(data.restaurants)); // Store data
+        navigate("/results"); // Redirect to results page
       }
     } catch (err) {
       setError("Could not connect to Flask server.");
-    }
-
-    setListening(false);
-  };
-
-  // Function to speak restaurant names
-  const speakRestaurants = (names) => {
-    if (names.length > 0) {
-      const message = `I found ${names.length} restaurants. ${names.join(", ")}`;
-      const speech = new SpeechSynthesisUtterance(message);
-      window.speechSynthesis.speak(speech);
-    } else {
-      const speech = new SpeechSynthesisUtterance("No restaurants found.");
-      window.speechSynthesis.speak(speech);
     }
   };
 
@@ -46,16 +32,6 @@ const App = () => {
       </button>
 
       {error && <p className="error">{error}</p>}
-      {restaurants.length > 0 && (
-        <div className="results">
-          <h2>Restaurants Found:</h2>
-          <ul>
-            {restaurants.map((restaurant, index) => (
-              <li key={index}>{restaurant}</li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 };

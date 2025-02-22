@@ -7,7 +7,11 @@ import requests
 from flask import Flask, request, jsonify
 import requests
 import geocoder
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)  # ✅ Allow all origins (React frontend)
+
 #from app import test_yelp_connection
 nlp = spacy.load("en_core_web_sm")
 import en_core_web_sm
@@ -135,16 +139,27 @@ def test_yelp_connection():
 
     if response.status_code == 200:
         data = response.json()
-        restaurants = [business["name"] for business in data.get("businesses", [])]  # Extract names
-        for restaurant in restaurants:
-            speak(restaurant)
+        restaurants = []
+        
+        for business in data.get("businesses", []):
+            restaurant_info = {
+                "name": business["name"],
+                "image_url": business["image_url"],
+                "rating": business.get("rating", "N/A"),
+                "address": ", ".join(business["location"]["display_address"]),
+                "price": business.get("price", "N/A"),
+                "url": business["url"],
+            }
+            restaurants.append(restaurant_info)
+            speak(restaurant_info["name"])  # Speak out the restaurant names
+
         return jsonify({
             "message": "Successfully connected to Yelp API!",
-            "restaurant_names": restaurants  # Send only restaurant names
+            "restaurants": restaurants
         })
     else:
         return jsonify({"error": "Failed to connect to Yelp API"}), response.status_code
-    
+
     
     
 # Main function to listen, extract nouns, and fetch restaurants
