@@ -6,7 +6,6 @@ import pygame
 
 
 # Set up OpenAI API Key
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 # Function to capture voice and convert to text
@@ -14,6 +13,7 @@ def listen():
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
+        #print(OPENAI_API_KEY)
         recognizer.adjust_for_ambient_noise(source)
         audio = recognizer.listen(source)
 
@@ -31,18 +31,19 @@ def listen():
 
 
 # Function to process text with OpenAI
-def ask_openai(question):
+'''def ask_openai(question):
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=[
             {"role": "user", "content": question}
         ],
-        max_tokens=100
+        max_tokens=50
     )
-    answer = response['choices'][0]['message']['content']
+    #answer = response['choices'][0]['message']['content']
+    answer = response.choices[0].message.content.strip()
     print(f"AI: {answer}")
     return answer
-
+'''
 
 # Function to convert text to speech and play audio using pygame
 def speak(text):
@@ -65,8 +66,8 @@ def speak(text):
 
 
 # Main loop to continuously listen, process, and speak
-def main():
-    while True:
+#if __name__ == "__main__":
+    '''while True:
         print("\nSay 'exit' to stop.")
         user_input = listen().lower()
         if 'exit' in user_input:
@@ -75,8 +76,6 @@ def main():
             break
         elif user_input:
             response = ask_openai(user_input)
-            speak(response)
-
-
-if __name__ == "__main__":
-    main()
+            print(response)
+            #speak(response)'''
+speak(listen())
