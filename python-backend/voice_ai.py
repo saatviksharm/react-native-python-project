@@ -2,10 +2,12 @@ import openai
 import speech_recognition as sr
 from gtts import gTTS
 import os
-from playsound import playsound
+import pygame
+
 
 # Set up OpenAI API Key
 openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 # Function to capture voice and convert to text
 def listen():
@@ -27,6 +29,7 @@ def listen():
         print("Network error.")
         return ""
 
+
 # Function to process text with OpenAI
 def ask_openai(question):
     response = openai.ChatCompletion.create(
@@ -40,13 +43,26 @@ def ask_openai(question):
     print(f"AI: {answer}")
     return answer
 
-# Function to convert text to speech
+
+# Function to convert text to speech and play audio using pygame
 def speak(text):
     tts = gTTS(text=text, lang='en')
     filename = "response.mp3"
     tts.save(filename)
-    playsound(filename)
+
+    # Initialize pygame mixer
+    pygame.mixer.init()
+    pygame.mixer.music.load(filename)
+    pygame.mixer.music.play()
+
+    # Wait for the audio to finish playing
+    while pygame.mixer.music.get_busy():
+        continue
+
+    # Clean up
+    pygame.mixer.quit()
     os.remove(filename)
+
 
 # Main loop to continuously listen, process, and speak
 def main():
@@ -60,6 +76,7 @@ def main():
         elif user_input:
             response = ask_openai(user_input)
             speak(response)
+
 
 if __name__ == "__main__":
     main()
