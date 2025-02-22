@@ -3,3 +3,6 @@ SpeechRecognition
 PyAudio
 gTTS
 playsoundpip
+flask
+pygame
+requests
