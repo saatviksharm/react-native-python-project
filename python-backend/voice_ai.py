@@ -16,12 +16,18 @@ def listen():
         print("Listening...")
         #print(OPENAI_API_KEY)
         recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
+        audio = recognizer.listen(source, phrase_time_limit=None)
 
     try:
         print("Recognizing...")
         text = recognizer.recognize_google(audio)
         print(f"You said: {text}")
+        if 'stop listening' in text:
+            print("Ending listening...")
+            # Remove the ending keyword from the result
+            text = text.replace('stop listening', '').strip()
+            return text
+
         return text
     except sr.UnknownValueError:
         print("Sorry, I did not understand that.")
