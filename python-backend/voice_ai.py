@@ -4,7 +4,11 @@ from gtts import gTTS
 import os
 import pygame
 import spacy
-
+nlp = spacy.load("en_core_web_sm")
+import en_core_web_sm
+nlp = en_core_web_sm.load()
+doc = nlp("This is a sentence.")
+print([(w.text, w.pos_) for w in doc])
 
 # Set up OpenAI API Key
 
@@ -22,12 +26,7 @@ def listen():
         print("Recognizing...")
         text = recognizer.recognize_google(audio)
         print(f"You said: {text}")
-        if 'stop listening' in text:
-            print("Ending listening...")
-            # Remove the ending keyword from the result
-            text = text.replace('stop listening', '').strip()
-            return text
-
+        extract_nouns(text)
         return text
     except sr.UnknownValueError:
         print("Sorry, I did not understand that.")
@@ -85,4 +84,22 @@ def speak(text):
             response = ask_openai(user_input)
             print(response)
             #speak(response)'''
+def extract_nouns(text):
+    doc = nlp(text)
+    nouns = []
+
+    # Extract nouns from the text
+    for token in doc:
+        # Check if the token is a noun
+        if token.pos_ == 'NOUN':
+            nouns.append(token.text)
+
+    # Remove duplicates
+    nouns = list(set(nouns))
+
+    # Only print if there are nouns
+    if nouns:
+        print(f"Nouns Detected: {nouns}")
+
+
 speak(listen())
