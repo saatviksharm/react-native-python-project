@@ -1,0 +1,23 @@
+.menu-details-container {
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .menu-image {
+    width: 80%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .back-button {
+    padding: 10px 20px;
+    background-color: #ff5a5f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    background-color: #e04a4f;
+  }

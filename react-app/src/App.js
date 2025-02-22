@@ -1,7 +1,11 @@
 import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
+import Results from "./Results";
 import "./App.css";
 import { FaMicrophone } from 'react-icons/fa';
+import MenuDetails from "./MenuDetails";
+
+
 
 const App = () => {
   const navigate = useNavigate();
@@ -57,5 +61,16 @@ const App = () => {
     </div>
   );
 };
+const AppWrapper = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/results" element={<Results />} />
+        <Route path="/menu/:businessId" element={<MenuDetails />} />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App;
+export default {App, AppWrapper};

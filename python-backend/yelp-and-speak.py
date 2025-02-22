@@ -53,7 +53,7 @@ FOOD_LIST = {
 
 
 app = Flask(__name__)
-CORS(app)  # ✅ Allow all origins (React frontend)
+CORS(app, resources={r"/*": {"origins": "*"}})  # ✅ Allow all origins (React frontend)
 
 #from app import test_yelp_connection
 nlp = spacy.load("en_core_web_sm")
@@ -205,6 +205,7 @@ def test_yelp_connection():
         
         for business in data.get("businesses", []):
             restaurant_info = {
+                "id": business["id"],
                 "name": business["name"],
                 "image_url": business["image_url"],
                 "rating": business.get("rating", "N/A"),
@@ -221,6 +222,20 @@ def test_yelp_connection():
         })
     else:
         return jsonify({"error": "Failed to connect to Yelp API"}), response.status_code
+    
+@app.route("/get-menu/<business_id>", methods=["GET"])
+def get_menu(business_id):
+    headers = {"Authorization": f"Bearer {YELP_API_KEY}"}
+    url = f"https://api.yelp.com/v3/businesses/{business_id}"
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        data = response.json()
+        return jsonify(data)
+    else:
+        return jsonify({"error": "Failed to get menu details"}), response.status_code
+
 
     
     

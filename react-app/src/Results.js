@@ -6,21 +6,19 @@ const Results = () => {
   const navigate = useNavigate();
   const [restaurants, setRestaurants] = useState([]);
 
+  // ✅ Use useEffect to load restaurants only once when component mounts
   useEffect(() => {
     const storedData = localStorage.getItem("restaurants");
     if (storedData) {
       setRestaurants(JSON.parse(storedData));
     } else {
-      navigate("/"); // Redirect to home if no data
+      navigate("/"); // Redirect to home if no data is found
     }
   }, [navigate]);
 
-  // ✅ Function to open Google Maps with restaurant address
-  const openGoogleMaps = (address) => {
-    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-      address
-    )}`;
-    window.open(googleMapsUrl, "_blank"); // Opens in a new tab
+  // ✅ Navigate to the MenuDetails page for selected restaurant
+  const openMenuDetails = (restaurantId) => {
+    navigate(`/menu/${restaurantId}`);
   };
 
   return (
@@ -31,7 +29,7 @@ const Results = () => {
           <div
             key={index}
             className="restaurant-card"
-            onClick={() => openGoogleMaps(restaurant.address)} // ✅ Click opens Google Maps
+            onClick={() => openMenuDetails(restaurant.id)} // ✅ Click to open MenuDetails
           >
             <img src={restaurant.image_url} alt={restaurant.name} />
             <h2>{restaurant.name}</h2>
