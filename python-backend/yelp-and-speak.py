@@ -9,6 +9,49 @@ import requests
 import geocoder
 from flask_cors import CORS
 
+FOOD_LIST = {
+    # Fast Foods
+    "burger", "cheeseburger", "bacon burger", "big mac", "whopper", "chicken sandwich",
+    "fish sandwich", "grilled cheese", "pulled pork", "philly cheesesteak", "sloppy joe",
+    "hot dog", "corn dog", "fried chicken", "chicken nuggets", "chicken tenders",
+    "popcorn chicken", "onion rings", "french fries", "mozzarella sticks", "curly fries",
+    "nachos", "tacos", "burritos", "quesadillas", "chimichangas", "enchiladas",
+    
+    # Pizza & Italian Foods
+    "pizza", "pepperoni pizza", "cheese pizza", "bbq chicken pizza", "hawaiian pizza",
+    "stromboli", "calzone", "garlic knots", "lasagna", "spaghetti", "fettuccine alfredo",
+    "ravioli", "carbonara", "gnocchi", "risotto",
+
+    # Asian Foods
+    "sushi", "nigiri", "maki", "sashimi", "poke bowl", "ramen", "pho", "udon",
+    "teriyaki chicken", "sweet and sour chicken", "general tso’s chicken",
+    "egg rolls", "dumplings", "spring rolls", "lo mein", "pad thai", "bibimbap",
+    
+    # Seafood & Expensive Foods
+    "lobster", "crab", "king crab", "snow crab", "shrimp", "prawns", "oysters", "scallops",
+    "mussels", "clams", "caviar", "uni", "foie gras", "wagyu beef", "truffles",
+    
+    # Vegetables
+    "broccoli", "carrots", "spinach", "potatoes", "sweet potatoes", "onions", "garlic",
+    "lettuce", "cucumber", "mushrooms", "avocado", "eggplant", "cabbage", "cauliflower",
+    "asparagus", "zucchini", "brussels sprouts", "peppers", "jalapenos", "artichokes",
+    
+    # Fruits
+    "apple", "banana", "strawberry", "blueberry", "raspberry", "blackberry",
+    "orange", "lemon", "lime", "pineapple", "mango", "grapefruit", "kiwi", "pomegranate",
+    "grapes", "pear", "watermelon", "cantaloupe", "honeydew", "dragon fruit", "passion fruit",
+
+    # Desserts
+    "chocolate cake", "vanilla cake", "cheesecake", "brownies", "cookies", "ice cream",
+    "milkshake", "doughnuts", "churros", "apple pie", "sundae", "tiramisu", "pudding",
+    "mousse", "cupcakes", "macarons", "scones", "mille-feuille",
+    
+    # Beverages
+    "coffee", "latte", "cappuccino", "espresso", "tea", "bubble tea", "matcha", "smoothie",
+    "milkshake", "soda", "coke", "pepsi", "sprite", "lemonade", "mojito"
+}
+
+
 app = Flask(__name__)
 CORS(app)  # ✅ Allow all origins (React frontend)
 
@@ -92,23 +135,34 @@ def speak(text):
     
 def extract_nouns(text):
     doc = nlp(text)
-    nouns = []
+    extracted_nouns = set()
+    
+    # ✅ Convert text to lowercase for case-insensitive matching
+    words = text.lower().split()
+    found_food = False
 
-    # Extract nouns from the text
+    # ✅ Check for food-related phrases in the sentence
+    for phrase in FOOD_LIST:
+        phrase_words = phrase.lower().split()
+        if all(word in words for word in phrase_words):  # If phrase exists in the sentence
+            extracted_nouns.add(phrase)
+            found_food = True  # ✅ Mark that we found a food phrase
+
+    # ✅ Process nouns detected by NLP
     for token in doc:
-        # Check if the token is a noun
-        if token.pos_ == 'NOUN':
-            nouns.append(token.text)
+        if token.pos_ == "NOUN":
+            noun = token.text.lower()
+            if noun in FOOD_LIST or found_food:  # ✅ Keep if it's in the food list or a phrase was found
+                extracted_nouns.add(noun)
 
-    # Remove duplicates
-    nouns = list(set(nouns))
-
-    # Only print if there are nouns
-    if nouns:
-        print(f"Nouns Detected: {nouns}")
-        return nouns
+    if extracted_nouns:
+        print(f"Filtered Nouns Detected: {extracted_nouns}")
+        return list(extracted_nouns)
     else:
-        speak("Sorry, I did not understand that")
+        speak("Sorry I do not understand that. Please try again.")
+        print("No valid food items detected.")
+        return []
+
 
 @app.route("/test-yelp", methods=["GET"])
 def test_yelp_connection():
@@ -121,6 +175,10 @@ def test_yelp_connection():
     speak("What would you like to search for?")
     
     nouns = extract_nouns(listen())
+
+    if nouns == []:
+        return
+
     search_term = " ".join(nouns)  # Combine nouns into a single search term
     print(f"Searching for: {search_term}")
     
