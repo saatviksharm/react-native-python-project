@@ -1,5 +1,3 @@
-print("Script is running...")
-
 import geocoder
 
 # Get current coordinates based on IP address

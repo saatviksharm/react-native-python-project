@@ -49,9 +49,11 @@ def listen():
         return text
     except sr.UnknownValueError:
         print("Sorry, I did not understand that.")
+        speak("Sorry, I did not understand that")
         return ""
     except sr.RequestError:
         print("Network error.")
+        speak("Sorry, I did not understand that")
         return ""
 
 # Function to convert text to speech and play audio using pygame
@@ -105,6 +107,8 @@ def extract_nouns(text):
     if nouns:
         print(f"Nouns Detected: {nouns}")
         return nouns
+    else:
+        speak("Sorry, I did not understand that")
 
 @app.route("/test-yelp", methods=["GET"])
 def test_yelp_connection():
