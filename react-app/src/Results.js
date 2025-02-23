@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Results.css";
+import { Card, CardActionArea, CardMedia, CardContent, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+
+
 
 const Results = () => {
   const navigate = useNavigate();
@@ -22,6 +25,15 @@ const Results = () => {
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
     window.open(googleMapsUrl, "_blank");
   };
+  const [open, setOpen] = useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   return (
     <div className="results-container">
@@ -31,7 +43,7 @@ const Results = () => {
           <div
             key={index}
             className="restaurant-card"
-            onClick={() => openGoogleMaps(restaurant.address)} // ✅ Click to open MenuDetails
+            onClick={handleClickOpen} // ✅ Click to open MenuDetails
           >
             <img src={restaurant.image_url} alt={restaurant.name} />
             <h2>{restaurant.name}</h2>
@@ -43,6 +55,17 @@ const Results = () => {
       <button className="back-button" onClick={() => navigate("/")}>
         🔙 Back to Search
       </button>
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Popup Title</DialogTitle>
+        <DialogContent>
+          <Typography>
+            This is the content of the popup window. You can add any information here.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
