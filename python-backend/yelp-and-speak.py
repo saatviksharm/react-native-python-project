@@ -212,6 +212,7 @@ def test_yelp_connection():
                 "address": ", ".join(business["location"]["display_address"]),
                 "price": business.get("price", "N/A"),
                 "url": business["url"],
+                "menu": business.get('menu_url', "N/A")
             }
             restaurants.append(restaurant_info)
             speak(restaurant_info["name"])  # Speak out the restaurant names
@@ -224,20 +225,30 @@ def test_yelp_connection():
         return jsonify({"error": "Failed to connect to Yelp API"}), response.status_code
     
 @app.route("/get-menu/<business_id>", methods=["GET"])
-def get_menu(business_id):
-    headers = {"Authorization": f"Bearer {YELP_API_KEY}"}
-    url = f"https://api.yelp.com/v3/businesses/{business_id}"
-
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        data = response.json()
-        return jsonify(data)
-    else:
-        return jsonify({"error": "Failed to get menu details"}), response.status_code
-
-
-    
+def get_menu(restaurant):
+    RESTAURANTS = { 
+        "Grill & Chill": { 
+            "burgers": [ 
+                {"name": "Classic Cheeseburger", "price": 7.99}, 
+                {"name": "Bacon BBQ Burger", "price": 9.49} 
+            ], 
+            "sides": [ 
+                {"name": "French Fries", "price": 3.49}, 
+                {"name": "Onion Rings", "price": 4.49} 
+            ] 
+        }, 
+        "Big Bite Burgers": { 
+            "burgers": [ 
+                {"name": "Big Bite Deluxe", "price": 12.99}, 
+                {"name": "Blue Cheese Bliss", "price": 10.99} 
+            ], 
+            "sides": [ 
+                {"name": "Loaded Tater Tots", "price": 6.99}, 
+                {"name": "Truffle Fries", "price": 5.99} 
+            ] 
+        } 
+    }
+    menu = RESTAURANTS.get(restaurant) if not menu: return jsonify({"error": "Restaurant not found"}), 404 # Generate fake order using Llama 2 fake_order = generate_fake_order(restaurant, menu) return jsonify({"menu": menu, "fake_order": fake_order})
     
 # Main function to listen, extract nouns, and fetch restaurants
 def main():

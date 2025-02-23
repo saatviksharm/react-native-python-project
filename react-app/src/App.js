@@ -61,16 +61,4 @@ const App = () => {
     </div>
   );
 };
-const AppWrapper = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/results" element={<Results />} />
-        <Route path="/menu/:businessId" element={<MenuDetails />} />
-      </Routes>
-    </Router>
-  );
-};
-
-export default {App, AppWrapper};
+export default App;
