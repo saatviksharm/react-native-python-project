@@ -248,7 +248,7 @@ def get_menu(restaurant):
             ] 
         } 
     }
-    menu = RESTAURANTS.get(restaurant) if not menu: return jsonify({"error": "Restaurant not found"}), 404 # Generate fake order using Llama 2 fake_order = generate_fake_order(restaurant, menu) return jsonify({"menu": menu, "fake_order": fake_order})
+    #menu = RESTAURANTS.get(restaurant) if not menu: return jsonify({"error": "Restaurant not found"}), 404 # Generate fake order using Llama 2 fake_order = generate_fake_order(restaurant, menu) return jsonify({"menu": menu, "fake_order": fake_order})
     
 # Main function to listen, extract nouns, and fetch restaurants
 def main():

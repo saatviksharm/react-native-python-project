@@ -17,8 +17,10 @@ const Results = () => {
   }, [navigate]);
 
   // ✅ Navigate to the MenuDetails page for selected restaurant
-  const openMenuDetails = (restaurantId) => {
-    navigate(`/menu/${restaurantId}`);
+  const openGoogleMaps = (address) => {
+    const query = encodeURIComponent(address);
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+    window.open(googleMapsUrl, "_blank");
   };
 
   return (
@@ -29,7 +31,7 @@ const Results = () => {
           <div
             key={index}
             className="restaurant-card"
-            onClick={() => openMenuDetails(restaurant.id)} // ✅ Click to open MenuDetails
+            onClick={() => openGoogleMaps(restaurant.address)} // ✅ Click to open MenuDetails
           >
             <img src={restaurant.image_url} alt={restaurant.name} />
             <h2>{restaurant.name}</h2>
