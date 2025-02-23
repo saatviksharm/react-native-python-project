@@ -3,48 +3,48 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./MenuDetails.css";
 
 const MenuDetails = () => {
-  const { businessId } = useParams();
-  const [menuDetails, setMenuDetails] = useState(null);
+  const { restaurant } = useParams();
   const navigate = useNavigate();
+  const [menu, setMenu] = useState(null);
 
   useEffect(() => {
-    const fetchMenuDetails = async () => {
+    const fetchMenu = async () => {
       try {
-        const response = await fetch(
-          `http://127.0.0.1:5000/get-menu/${businessId}`
-        );
+        const response = await fetch(`http://127.0.0.1:5000/get-menu/${restaurant}`);
         const data = await response.json();
-        setMenuDetails(data);
+        setMenu(data.menu);
+
+        // ✅ Ask the user what they want to order
+        const speech = new SpeechSynthesisUtterance(`What would you like to order from ${restaurant}?`);
+        window.speechSynthesis.speak(speech);
+
       } catch (error) {
-        console.error("Error fetching menu details:", error);
+        console.error("Error fetching menu:", error);
       }
     };
 
-    fetchMenuDetails();
-  }, [businessId]);
+    fetchMenu();
+  }, [restaurant]);
 
-  if (!menuDetails) {
-    return <div>Loading menu details...</div>;
+  if (!menu) {
+    return <div>Loading menu...</div>;
   }
 
   return (
     <div className="menu-details-container">
-      <h1>{menuDetails.name}</h1>
-      <img
-        src={menuDetails.image_url}
-        alt={menuDetails.name}
-        className="menu-image"
-      />
-      <p>{menuDetails.location.display_address.join(", ")}</p>
-      <p>⭐ {menuDetails.rating} | {menuDetails.price}</p>
-
-      <h2>Menu</h2>
+      <h1>{restaurant} Menu</h1>
       <ul>
-        {menuDetails.categories.map((category, index) => (
-          <li key={index}>{category.title}</li>
+        {Object.keys(menu).map((category, index) => (
+          <li key={index}>
+            <h2>{category}</h2>
+            <ul>
+              {menu[category].map((item, i) => (
+                <li key={i}>{item.name} - ${item.price.toFixed(2)}</li>
+              ))}
+            </ul>
+          </li>
         ))}
       </ul>
-
       <button className="back-button" onClick={() => navigate("/")}>
         🔙 Back to Search
       </button>
