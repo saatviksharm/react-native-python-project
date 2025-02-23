@@ -1,38 +1,43 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Results.css";
-import { Card, CardActionArea, CardMedia, CardContent, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
-
-
 
 const Results = () => {
   const navigate = useNavigate();
   const [restaurants, setRestaurants] = useState([]);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
+  const [order, setOrder] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
 
-  // ✅ Use useEffect to load restaurants only once when component mounts
   useEffect(() => {
     const storedData = localStorage.getItem("restaurants");
     if (storedData) {
       setRestaurants(JSON.parse(storedData));
     } else {
-      navigate("/"); // Redirect to home if no data is found
+      navigate("/"); // Redirect if no restaurant data
     }
   }, [navigate]);
 
-  // ✅ Navigate to the MenuDetails page for selected restaurant
-  const openGoogleMaps = (address) => {
-    const query = encodeURIComponent(address);
-    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${query}`;
+  // ✅ Function to show the popup and ask for an order
+  const startOrderProcess = (restaurant) => {
+    setSelectedRestaurant(restaurant);
+    setShowPopup(true);
+  };
+
+  // ✅ Function to place an order and navigate to Google Maps
+  const placeOrder = () => {
+    if (!selectedRestaurant) return;
+
+    // ✅ Speak "Order placed!"
+    const speech = new SpeechSynthesisUtterance("Order placed!");
+    window.speechSynthesis.speak(speech);
+
+    // ✅ Open Google Maps with restaurant location
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(selectedRestaurant.address)}`;
     window.open(googleMapsUrl, "_blank");
-  };
-  const [open, setOpen] = useState(false);
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+    // ✅ Close the popup
+    setShowPopup(false);
   };
 
   return (
@@ -43,7 +48,7 @@ const Results = () => {
           <div
             key={index}
             className="restaurant-card"
-            onClick={handleClickOpen} // ✅ Click to open MenuDetails
+            onClick={() => startOrderProcess(restaurant)} // ✅ Show order popup when clicked
           >
             <img src={restaurant.image_url} alt={restaurant.name} />
             <h2>{restaurant.name}</h2>
@@ -52,20 +57,25 @@ const Results = () => {
           </div>
         ))}
       </div>
+
+      {/* ✅ Order Popup */}
+      {showPopup && selectedRestaurant && (
+        <div className="popup">
+          <h2>What would you like to order from {selectedRestaurant.name}?</h2>
+          <input
+            type="text"
+            placeholder="Type your order here..."
+            value={order}
+            onChange={(e) => setOrder(e.target.value)}
+          />
+          <button onClick={placeOrder}>Place Order</button>
+          <button className="cancel" onClick={() => setShowPopup(false)}>Cancel</button>
+        </div>
+      )}
+
       <button className="back-button" onClick={() => navigate("/")}>
         🔙 Back to Search
       </button>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Popup Title</DialogTitle>
-        <DialogContent>
-          <Typography>
-            This is the content of the popup window. You can add any information here.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
-        </DialogActions>
-      </Dialog>
     </div>
   );
 };
